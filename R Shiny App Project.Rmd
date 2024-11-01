@@ -1,0 +1,151 @@
+---
+title: "R Shiny App Project"
+output: html_document
+date: "2024-10-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(readr)
+
+# Load the dataset
+financial_data <- read_csv("Financial Statements.csv")
+
+# View the first few rows of the copied dataset
+head(financial_data_cleaned)
+
+# Check the structure of the copied dataset
+#str(financial_data_cleaned)
+
+# Focus on key columns in the copied dataset
+financial_data_cleaned <- financial_data_cleaned %>%
+  select(Year, Company, Revenue, `Net Income`, `Earning Per Share`, `Debt/Equity Ratio`, 
+         ROE, ROA, EBITDA, `Net Profit Margin`, `Cash Flow from Operating`, `Market Cap(in B USD)`)
+
+# Check the structure of the selected columns in the copied dataset
+str(financial_data_cleaned)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+library(dplyr)
+# Rename columns to be more understandable and consistent
+financial_data_cleaned <- financial_data_cleaned %>%
+  rename(
+    Revenue = `Revenue`,
+    Net_Income = `Net Income`,
+    EPS = `Earning Per Share`,
+    Debt_Equity_Ratio = `Debt/Equity Ratio`,
+    ROE = `ROE`,
+    ROA = `ROA`,
+    EBITDA = `EBITDA`,
+    Net_Profit_Margin = `Net Profit Margin`,
+    Operating_Cash_Flow = `Cash Flow from Operating`,
+    Market_Cap_B_USD = `Market Cap(in B USD)`
+  )
+
+# Check the renamed columns in the copied dataset
+head(financial_data_cleaned)
+
+```
+```{r}
+# Check for missing values in the copied dataset
+colSums(is.na(financial_data_cleaned))
+
+# Handling missing values by imputing the median for numerical columns in the copied dataset
+financial_data_cleaned$Revenue[is.na(financial_data_cleaned$Revenue)] <- median(financial_data_cleaned$Revenue, na.rm = TRUE)
+financial_data_cleaned$Net_Income[is.na(financial_data_cleaned$Net_Income)] <- median(financial_data_cleaned$Net_Income, na.rm = TRUE)
+financial_data_cleaned$EPS[is.na(financial_data_cleaned$EPS)] <- median(financial_data_cleaned$EPS, na.rm = TRUE)
+financial_data_cleaned$Debt_Equity_Ratio[is.na(financial_data_cleaned$Debt_Equity_Ratio)] <- median(financial_data_cleaned$Debt_Equity_Ratio, na.rm = TRUE)
+financial_data_cleaned$ROE[is.na(financial_data_cleaned$ROE)] <- median(financial_data_cleaned$ROE, na.rm = TRUE)
+financial_data_cleaned$ROA[is.na(financial_data_cleaned$ROA)] <- median(financial_data_cleaned$ROA, na.rm = TRUE)
+financial_data_cleaned$EBITDA[is.na(financial_data_cleaned$EBITDA)] <- median(financial_data_cleaned$EBITDA, na.rm = TRUE)
+financial_data_cleaned$Net_Profit_Margin[is.na(financial_data_cleaned$Net_Profit_Margin)] <- median(financial_data_cleaned$Net_Profit_Margin, na.rm = TRUE)
+financial_data_cleaned$Operating_Cash_Flow[is.na(financial_data_cleaned$Operating_Cash_Flow)] <- median(financial_data_cleaned$Operating_Cash_Flow, na.rm = TRUE)
+financial_data_cleaned$Market_Cap_B_USD[is.na(financial_data_cleaned$Market_Cap_B_USD)] <- median(financial_data_cleaned$Market_Cap_B_USD, na.rm = TRUE)
+
+# Verify that missing values have been handled in the copied dataset
+colSums(is.na(financial_data_cleaned))
+
+
+```
+```{r}
+
+# Check for duplicate rows in the copied dataset
+duplicate_rows <- duplicated(financial_data_cleaned)
+sum(duplicate_rows)  # Count of duplicates
+
+# Remove duplicate rows if any in the copied dataset
+financial_data_cleaned <- financial_data_cleaned[!duplicate_rows, ]
+
+
+```
+```{r}
+
+# Visualize outliers using boxplots for key metrics in the copied dataset
+boxplot(financial_data_cleaned$Revenue, main = "Revenue Boxplot")
+boxplot(financial_data_cleaned$Net_Income, main = "Net Income Boxplot")
+boxplot(financial_data_cleaned$EPS, main = "EPS Boxplot")
+boxplot(financial_data_cleaned$Market_Cap_B_USD, main = "Market Cap Boxplot")
+
+# Cap extreme outliers at the 99th percentile for certain metrics in the copied dataset
+cap_revenue <- quantile(financial_data_cleaned$Revenue, 0.99, na.rm = TRUE)
+financial_data_cleaned$Revenue[financial_data_cleaned$Revenue > cap_revenue] <- cap_revenue
+
+cap_net_income <- quantile(financial_data_cleaned$Net_Income, 0.99, na.rm = TRUE)
+financial_data_cleaned$Net_Income[financial_data_cleaned$Net_Income > cap_net_income] <- cap_net_income
+
+cap_eps <- quantile(financial_data_cleaned$EPS, 0.99, na.rm = TRUE)
+financial_data_cleaned$EPS[financial_data_cleaned$EPS > cap_eps] <- cap_eps
+
+cap_market_cap <- quantile(financial_data_cleaned$Market_Cap_B_USD, 0.99, na.rm = TRUE)
+financial_data_cleaned$Market_Cap_B_USD[financial_data_cleaned$Market_Cap_B_USD > cap_market_cap] <- cap_market_cap
+
+```
+
+```{r}
+
+# Convert necessary columns to appropriate data types in the copied dataset
+financial_data_cleaned$Company <- as.factor(financial_data_cleaned$Company)
+financial_data_cleaned$Year <- as.numeric(financial_data_cleaned$Year)
+financial_data_cleaned$Revenue <- as.numeric(financial_data_cleaned$Revenue)
+financial_data_cleaned$Net_Income <- as.numeric(financial_data_cleaned$Net_Income)
+financial_data_cleaned$EPS <- as.numeric(financial_data_cleaned$EPS)
+financial_data_cleaned$Debt_Equity_Ratio <- as.numeric(financial_data_cleaned$Debt_Equity_Ratio)
+financial_data_cleaned$ROE <- as.numeric(financial_data_cleaned$ROE)
+financial_data_cleaned$ROA <- as.numeric(financial_data_cleaned$ROA)
+financial_data_cleaned$EBITDA <- as.numeric(financial_data_cleaned$EBITDA)
+financial_data_cleaned$Net_Profit_Margin <- as.numeric(financial_data_cleaned$Net_Profit_Margin)
+financial_data_cleaned$Operating_Cash_Flow <- as.numeric(financial_data_cleaned$Operating_Cash_Flow)
+financial_data_cleaned$Market_Cap_B_USD <- as.numeric(financial_data_cleaned$Market_Cap_B_USD)
+
+# Check the structure of the cleaned dataset
+str(financial_data_cleaned)
+``` 
+
+
+```{r}
+
+# Save the cleaned copy of the dataset as a new CSV file
+write_csv(financial_data_cleaned, "financial_data_cleaned.csv")
+```
+
+```{r}
+library(readr)
+#head(financial_data_cleaned)
+
+(financial_data_cleaned)
+```
