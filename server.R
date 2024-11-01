@@ -111,11 +111,11 @@ server <- function(input, output) {
   
   # Summary table with conditional formatting for growth rates
   output$summary_table <- renderDT({
-    req(input$summary_metrics, input$companies)
+    req(input$summary_metrics, input$summary_companies)
     
     # Create summary data
     summary_data <- financial_data_cleaned %>%
-      filter(Company %in% input$companies) %>%
+      filter(Company %in% input$summary_companies) %>%
       filter(Year >= input$yearRange[1] & Year <= input$yearRange[2]) %>%
       group_by(Company) %>%
       summarise(across(all_of(input$summary_metrics), list(
